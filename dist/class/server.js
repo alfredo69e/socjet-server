@@ -10,40 +10,37 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var express_1 = __importDefault(require("express"));
-var environment_1 = require("../global/environment");
-var socket_io_1 = __importDefault(require("socket.io"));
-var http_1 = __importDefault(require("http"));
-var socket = __importStar(require("../sockets/sockets"));
-var Server = /** @class */ (function () {
-    function Server() {
+const express_1 = __importDefault(require("express"));
+const environment_1 = require("../global/environment");
+const socket_io_1 = __importDefault(require("socket.io"));
+const http_1 = __importDefault(require("http"));
+const socket = __importStar(require("../sockets/sockets"));
+class Server {
+    constructor() {
         this.app = express_1.default();
         this.port = environment_1.SERVER_PORT;
         this.httpServer = new http_1.default.Server(this.app);
         this.io = socket_io_1.default(this.httpServer);
         this.listenerSocket();
     }
-    Object.defineProperty(Server, "instance", {
-        get: function () {
-            return this._instance || (this._instance = new this());
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Server.prototype.listenerSocket = function () {
-        var _this = this;
-        console.log("Escuchando conexiones - sockets");
-        this.io.on('connection', function (client) {
-            console.log("Cliente Conectado");
+    static get instance() {
+        return this._instance || (this._instance = new this());
+    }
+    listenerSocket() {
+        console.log(`Escuchando conexiones - sockets`);
+        this.io.on('connection', client => {
+            // conectar cliente
+            socket.connectClient(client);
+            // config user
+            socket.configUser(client, this.io);
             // Message
-            socket.message(client, _this.io);
+            socket.message(client, this.io);
             // Desconectar
             socket.disconnect(client);
         });
-    };
-    Server.prototype.start = function (callback) {
+    }
+    start(callback) {
         this.httpServer.listen(this.port, callback);
-    };
-    return Server;
-}());
+    }
+}
 exports.default = Server;
