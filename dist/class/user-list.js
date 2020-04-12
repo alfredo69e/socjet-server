@@ -23,7 +23,9 @@ class UserList {
     }
     // devolver la lista
     getList() {
-        return this.list;
+        return this.list.filter((user) => {
+            return user.name !== 'sin-nombre';
+        });
     }
     // devolver usuario
     getUser(id) {

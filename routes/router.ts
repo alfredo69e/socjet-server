@@ -1,5 +1,7 @@
 import { Router, Request, Response } from 'express';
 import Server from '../class/server';
+import { Socket } from 'socket.io';
+import { usersConnects } from '../sockets/sockets';
 
 
 const router = Router();
@@ -51,6 +53,42 @@ router.post('/message/:id', (req: Request, res: Response) => {
         de,
         id
     })
+});
+
+// servicio para octener todos los id
+router.get('/users', (req: Request, res: Response) => {
+
+
+    const server = Server.instance;
+
+    server.io.clients((err: any, clients: string[]) => {
+
+        if(err) {
+           return res.json({
+                ok: false,
+                err
+            }) 
+        }
+
+        for (let i = 0; i < clients.length; i++) {
+            
+        }
+
+        res.json({
+            ok: true,
+            clients
+        })
+    });
+});
+
+router.get('/users/detals', (req: Request, res: Response) => { 
+
+    res.json({
+        ok: true,
+        clients: usersConnects.getList()
+    })
+    
+
 });
 
 
